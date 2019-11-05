@@ -1,0 +1,102 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>fish.payara.sentry</groupId>
+    <artifactId>SentryLogHandler</artifactId>
+    <version>1.0.0</version>
+    <packaging>bundle</packaging>
+
+    <name>SentryLogHandler OSGi Bundle</name>
+
+    <properties>
+        <io.sentry.version>1.7.27</io.sentry.version>
+        <org.slf4j.simple.version>1.7.22</org.slf4j.simple.version>
+        <com.fasterxml.jackson.core.version>2.9.9</com.fasterxml.jackson.core.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>4.3.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.hk2</groupId>
+            <artifactId>hk2-locator</artifactId>
+            <version>2.5.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.hk2</groupId>
+            <artifactId>hk2-core</artifactId>
+            <version>2.5.0-b63</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.sentry</groupId>
+            <artifactId>sentry</artifactId>
+            <version>${io.sentry.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${org.slf4j.simple.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${com.fasterxml.jackson.core.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>payara-sentry-log-handler-${project.version}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>4.2.1</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Import-Package>!*</Import-Package>
+                        <Export-Package>fish.payara.sentry.*</Export-Package>
+                        <Private-Package>io.sentry.*,org.slf4j.*,com.fasterxml.jackson.core.*</Private-Package>
+                        <Fragment-Host>system.bundle; extension:=framework</Fragment-Host>
+                        <Include-Resource>
+                            {maven-resources},
+                            sentry-build.properties=${project.build.directory}/dependencies/sentry/sentry-build.properties,
+                        </Include-Resource>                  
+                    </instructions>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-dependencies</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <markersDirectory>${project.build.directory}/dependencies/dependency-maven-plugin-markers</markersDirectory>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>io.sentry</groupId>
+                                    <artifactId>sentry</artifactId>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/dependencies/sentry</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

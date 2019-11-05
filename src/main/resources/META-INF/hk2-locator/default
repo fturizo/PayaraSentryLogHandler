@@ -1,0 +1,2 @@
+[fish.payara.sentry.PayaraSentryHandler]S
+contract={java.util.logging.Handler}
